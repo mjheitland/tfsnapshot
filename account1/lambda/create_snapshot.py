@@ -22,10 +22,12 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
+            'snapshot_id': snapshot_id, 
             'body': json.dumps('create_snapshot was successful!')
         }
     except ClientError as e:
         logger.error("*** Error in create_snapshot: {}".format(e))
+        raise
 
 
 def create_snapshot(volume_id, region):

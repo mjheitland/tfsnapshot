@@ -20,27 +20,15 @@ def lambda_handler(event, context):
         logger.info("destination_region = {}".format(destination_region))
 
         # copy a snapshort to another region
-        result = copy_snapshot_to_another_region(snapshot_id, source_region, destination_region)
-
-        if result == 200:
-            logger.info("... snapshot {} copied successfully from {} to {}.".format(snapshot_id, source_region, destination_region))
-            return {
-                'statusCode': 200,
-                'body': json.dumps('copy_snapshot_to_another_region was successful!')
-            }
-        else:
-            logger.error("*** Error in copy_snapshot_to_another_region: {}".format(result))
-            return {
-                'statusCode': result,
-                'body': json.dumps('copy_snapshot_to_another_region was not successful!')
-            }
+        copy_snapshot_id = copy_snapshot_to_another_region(snapshot_id, source_region, destination_region)
+        return {
+            'statusCode': 200,
+            'copy_snapshot_id': copy_snapshot_id,
+            'body': json.dumps('copy_snapshot_to_another_region was successful!')
+        }
     except ClientError as e:
         logger.error("*** Error in copy_snapshot_to_another_region: {}".format(e))
-        return {
-            'statusCode': 500,
-            'body': json.dumps('copy_snapshot_to_another_region was not successful!')
-        }
-
+        raise
 
 def copy_snapshot_to_another_region(snapshot_id, source_region, destination_region):
     logger.info("Copying snapshot {} from {} to {} ...".format(snapshot_id, source_region, destination_region))
@@ -71,4 +59,8 @@ def copy_snapshot_to_another_region(snapshot_id, source_region, destination_regi
         ]
     )
     logger.info(result)   
-    return result['ResponseMetadata']['HTTPStatusCode']
+    if result['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise ClientError()
+    copy_snapshot_id = result['SnapshotId']
+    logger.info("... snapshot {} copied successfully from {} to {}, copy_snapshot_id={}.".format(snapshot_id, source_region, destination_region, copy_snapshot_id))
+    return copy_snapshot_id

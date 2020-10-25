@@ -16,8 +16,8 @@ account1 and account2 (all resoruce names are prefixed with "tfsnapshot"):
 + 1 role for *_snapshot
 + 1 lambda "log_event"
 + 1 lambda "create_snapshot"
-+ 1 lambda "delete_snapshot"
 + 1 lambda "copy_snapshot_to_another_region"
++ 1 lambda "delete_snapshot"
 + 1 lambda "share_snapshot"
 
 ## Terraform commands
@@ -35,3 +35,10 @@ rm -rfv **/.terraform # remove all recursive subdirectories
 [Mount Instructions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html)
 Terraform creates and attaches an EBS block device to the ec2 instance,
 once the ec2 instance boots, the volume gets mounted automatically using user data template
+
+## How to create and share a snapshot with another account in another region
+Run the following lambdas in this sequence:
++ create_snapshot (region, volume_id) => (snapshot_id)
++ copy_snapshot_to_another_region: (source_region, destionation_region, snapshot_id) => (copy_snapshot_id)
++ delete_snapshot: (region, snapshot_id)
++ share_snapshot: (region, snapshot_id, owner_account_id, other_account_id)
