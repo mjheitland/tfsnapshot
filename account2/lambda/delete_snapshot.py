@@ -22,10 +22,11 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
-            'body': json.dumps('delete_snapshot was successful!')
+            'body': json.dumps('delete_snapshot {} was successful!'.format(snapshot_id))
         }
     except ClientError as e:
         logger.error("*** Error in delete_snapshot: {}".format(e))
+        raise
 
 
 def delete_snapshot(snapshot_id, region):
@@ -34,8 +35,9 @@ def delete_snapshot(snapshot_id, region):
     # delete snapshot
     ec2resource = boto3.resource('ec2', region_name=region)
     snapshot = ec2resource.Snapshot(snapshot_id)
-    snapshot.delete()
+    result = snapshot.delete()
+    logger.info("result = {}".format(result))
+    if result['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise ClientError()
 
     logger.info("... snapshot was deleted successfully (snapshot_id = {}).".format(snapshot_id))
-
-    return snapshot_id

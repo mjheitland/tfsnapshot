@@ -22,26 +22,14 @@ def lambda_handler(event, context):
         logger.info("other_account_id = {}".format(other_account_id))
 
         # share a snapshot with another account
-        result = share_snapshot(snapshot_id, region, owner_account_id, other_account_id)
-
-        if result == 200:
-            logger.info("... snapshot {} in region {} owned by {} was successfully shared with another account {}.".format(snapshot_id, region, owner_account_id, other_account_id))
-            return {
-                'statusCode': 200,
-                'body': json.dumps('share_snapshot was successful!')
-            }
-        else:
-            logger.error("*** Error in share_snapshot: {}".format(result))
-            return {
-                'statusCode': result,
-                'body': json.dumps('share_snapshot was not successful!')
-            }
+        share_snapshot(snapshot_id, region, owner_account_id, other_account_id)
+        return {
+            'statusCode': 200,
+            'body': json.dumps('share_snapshot {} was successful!'.format(snapshot_id))
+        }
     except ClientError as e:
         logger.error("*** Error in share_snapshot: {}".format(e))
-        return {
-            'statusCode': 500,
-            'body': json.dumps('share_snapshot was not successful!')
-        }
+        raise
 
 
 def share_snapshot(snapshot_id, region, owner_account_id, other_account_id):
@@ -59,4 +47,7 @@ def share_snapshot(snapshot_id, region, owner_account_id, other_account_id):
         }
     )
     logger.info("result = {}".format(result))
-    return result['ResponseMetadata']['HTTPStatusCode']
+    if result['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise ClientError()
+
+    logger.info("... snapshot {} in region {} owned by {} was successfully shared with another account {}.".format(snapshot_id, region, owner_account_id, other_account_id))

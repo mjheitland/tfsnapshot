@@ -24,7 +24,7 @@ def lambda_handler(event, context):
         return {
             'statusCode': 200,
             'copy_snapshot_id': copy_snapshot_id,
-            'body': json.dumps('copy_snapshot_to_another_region was successful!')
+            'body': json.dumps('copy_snapshot_to_another_region for snapshot {} was successful!'.format(snapshot_id))
         }
     except ClientError as e:
         logger.error("*** Error in copy_snapshot_to_another_region: {}".format(e))
