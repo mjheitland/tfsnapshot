@@ -5,15 +5,17 @@
 #chkconfig httpd on
 
 # mount EBS volume as /data
-lsblk # to list all attached volumes
+lsblk --output NAME,TYPE,SIZE,FSTYPE,MOUNTPOINT,LABEL # list all attached volumes
 file -s /dev/xvdf # to check if there is already a file system installed
 yum install -y xfsprogs # install fs tools
 mkfs -t xfs /dev/xvdf # to create a file system
 file -s /dev/xvdf # to check if there is already a file system installed
 mkdir /data # create mount folder /data
 mount /dev/xvdf /data # mount EBS volume
+cat /proc/mounts # to list mounted devices
 cd /data
-echo "hello world!" > hello_world.txt
+df -H . # check disk size
+echo 'hello world!' > hello_world.txt
 
 # change /etc/fstab to allow auto-mount of EBS volume
 cp /etc/fstab /etc/fstab.orig # back up original auto-mount file “fstab”

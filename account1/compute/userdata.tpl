@@ -15,7 +15,7 @@ mount /dev/xvdf /data # mount EBS volume
 cat /proc/mounts # to list mounted devices
 cd /data
 df -H . # check disk size
-echo "hello world!" > hello_world.txt
+echo 'hello world!' > hello_world.txt
 
 # change /etc/fstab to allow auto-mount of EBS volume
 cp /etc/fstab /etc/fstab.orig # back up original auto-mount file “fstab”
