@@ -37,8 +37,8 @@ Terraform creates and attaches an EBS block device to the ec2 instance,
 once the ec2 instance boots, the volume gets mounted automatically using user data template
 
 ## How to create and share a snapshot with another account in another region
-Run the following lambdas in this sequence (use <copy_snapshot_id> as snapshot_id for share_snapshot):
+Run the following lambdas in this sequence (use <copy_snapshot_id> as snapshot_id for share_snapshot and optionally kms_key_id if you want to encrypt the snapshot):
 + create_snapshot (region, volume_id) => (snapshot_id)
-+ copy_snapshot_to_another_region: (source_region, destionation_region, snapshot_id) => (copy_snapshot_id)
++ copy_snapshot_to_another_region: (source_region, destionation_region, snapshot_id [, kms_key_id]) => (copy_snapshot_id)
 + delete_snapshot: (region, snapshot_id)
 + share_snapshot: (region, snapshot_id, owner_account_id, other_account_id)
